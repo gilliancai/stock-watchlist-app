@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/* Fixed dark "trading dashboard" theme. */
+:root {
+  --background: #0b0f17;
+  --surface: #131a26;
+  --surface-2: #1a2434;
+  --border: #25303f;
+  --foreground: #e7ecf3;
+  --muted: #8b97a8;
+  --accent: #38bdf8;
+  --up: #34d399;
+  --down: #f87171;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-up: var(--up);
+  --color-down: var(--down);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html,
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Shared form input styling */
+.input {
+  width: 100%;
+  margin-top: 0.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  padding: 0.5rem 0.65rem;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  outline: none;
+}
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.input::placeholder {
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+body {
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+/* Markdown content (AI insights) */
+.prose-insight h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 1rem 0 0.35rem;
+  color: var(--accent);
+}
+.prose-insight h3:first-child {
+  margin-top: 0;
+}
+.prose-insight p {
+  margin: 0.4rem 0;
+  line-height: 1.6;
+  color: var(--foreground);
+}
+.prose-insight ul {
+  margin: 0.35rem 0;
+  padding-left: 1.1rem;
+  list-style: disc;
+}
+.prose-insight li {
+  margin: 0.2rem 0;
+  line-height: 1.55;
+}
+.prose-insight strong {
+  color: #fff;
+}
+.prose-insight em {
+  color: var(--muted);
+}

@@ -1,0 +1,113 @@
+// Prisma schema for the Stock Watchlist & Insights app.
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// A company you're interested in investing in.
+model Company {
+  id        Int       @id @default(autoincrement())
+  name      String
+  symbol    String    @unique
+  exchange  String // e.g. NASDAQ, NYSE, HKEX
+  location  String // HQ city / country
+  sector    String?
+  category  String? // AI/semiconductor value-chain layer id (see lib/categories)
+  domain    String? // bare website domain (e.g. apple.com), used for the logo
+  notes     String? // your own notable-data / thesis
+  insights  Insight[]
+  purchases Purchase[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// A single buy lot: shares of a company bought on a given day at a given price.
+// Unrealized profit/loss is computed live against the latest quote.
+model Purchase {
+  id            Int      @id @default(autoincrement())
+  companyId     Int
+  company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  date          String // yyyy-mm-dd trade date
+  shares        Float
+  pricePerShare Float // in the stock's listing currency
+  note          String?
+  createdAt     DateTime @default(now())
+}
+
+// Latest cached market snapshot for a symbol (one row per symbol).
+model Quote {
+  symbol        String   @id
+  price         Float
+  change        Float
+  changePercent Float
+  dayHigh       Float?
+  dayLow        Float?
+  week52High    Float?
+  week52Low     Float?
+  marketCap     Float?
+  currency      String?
+  fetchedAt     DateTime @default(now())
+}
+
+// Cached ~12-month daily close history for a symbol (JSON), refreshed lazily.
+// History barely changes intraday, so this avoids re-fetching it every page load.
+model HistoryCache {
+  symbol    String   @id
+  points    String // JSON array of { date, close }
+  fetchedAt DateTime @default(now())
+}
+
+// Cached next-earnings date for a symbol, refreshed daily.
+model EarningsCache {
+  symbol    String   @id
+  date      String? // yyyy-mm-dd of the next earnings call (null if unknown)
+  estimate  Boolean  @default(false) // Yahoo flags the date as an estimate
+  fetchedAt DateTime @default(now())
+}
+
+// Cached fundamentals snapshot (valuation, growth, margins, debt) for a symbol.
+// Stored as JSON; refreshed daily since these move slowly.
+model FundamentalsCache {
+  symbol    String   @id
+  data      String // JSON of FundamentalsInfo
+  fetchedAt DateTime @default(now())
+}
+
+// Cached analyst consensus (recommendation trend + price target) from Finnhub.
+model AnalystCache {
+  symbol    String   @id
+  data      String // JSON of AnalystInfo
+  fetchedAt DateTime @default(now())
+}
+
+// Cached macro snapshot from FRED (rates, yield curve, inflation). Single row.
+model MacroCache {
+  id        Int      @id @default(1)
+  data      String // JSON of MacroInfo
+  fetchedAt DateTime @default(now())
+}
+
+// Cached AI-generated daily briefing across the whole watchlist (one per day).
+model Digest {
+  date      String   @id // yyyy-mm-dd (local)
+  content   String
+  createdAt DateTime @default(now())
+}
+
+// Cached AI-generated insight, one per company per day.
+model Insight {
+  id        Int      @id @default(autoincrement())
+  companyId Int
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  date      String // yyyy-mm-dd (local)
+  content   String
+  createdAt DateTime @default(now())
+
+  @@unique([companyId, date])
+}

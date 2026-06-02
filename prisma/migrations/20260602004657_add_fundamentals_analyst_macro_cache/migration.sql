@@ -1,0 +1,20 @@
+-- CreateTable
+CREATE TABLE "FundamentalsCache" (
+    "symbol" TEXT NOT NULL PRIMARY KEY,
+    "data" TEXT NOT NULL,
+    "fetchedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "AnalystCache" (
+    "symbol" TEXT NOT NULL PRIMARY KEY,
+    "data" TEXT NOT NULL,
+    "fetchedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "MacroCache" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT DEFAULT 1,
+    "data" TEXT NOT NULL,
+    "fetchedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
